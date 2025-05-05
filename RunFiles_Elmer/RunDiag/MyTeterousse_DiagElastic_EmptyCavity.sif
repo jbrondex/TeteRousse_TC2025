@@ -1,0 +1,273 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!                                       !!
+!! TeteRousse Study Spring 2024          !!
+!!                                       !!
+!! Julien Brondex		         !!
+!!                                       !!
+!! Elastic Stress for empty cavity       !! 
+!!                                       !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+check keywords warn
+echo on
+
+
+! Name of output files
+$Name = "DiagElastic_Poisson03_E1GPa_EmptyCavity_NoDispLat_"
+! Restart from initialisation to have geometry of cavity before any operations
+$NameRS = "RunSteadyInit_InitGeoAndGMAndT_" 
+ 
+
+! Define the parameter in MPa - a - m
+#yearinsec = 365.25*24*60*60
+#rhoi = 900.0/(1.0e6*yearinsec^2)
+#rhow = 1000.0/(1.0e6*yearinsec^2)
+#gravity = -9.81*yearinsec^2
+#selfweight = gravity*rhoi
+#GLTolerance = 1.0e-4
+
+Header
+  Mesh DB "." "teterousse"
+End
+
+Constants
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Simulation
+  Coordinate System  =  Cartesian 3D 
+  Simulation Type = Steady State     
+
+  Extruded Mesh Levels = Integer 16
+
+  Steady State Min Iterations = 1
+  Steady State Max Iterations = 1
+
+  Restart File = "$NameRS".result"
+  Restart Position = 1000
+  Restart Before Initial Conditions = Logical True
+
+  Output File = "$Name".result"
+  Post File = "$Name".vtu"
+
+  max output level = 3   
+
+  Initialize Dirichlet Conditions = Logical False
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! The ice 
+Body 1
+  Equation = 1
+  Body Force = 1
+  Material = 1
+  Initial Condition = 1
+End
+
+! The Upper Free surface
+Body 2
+  Equation = 2
+!  Body Force = 2
+  Material = 1
+  Initial Condition = 2
+End
+
+! The Cavity Free surface
+Body 3
+  Equation = 3
+!  Body Force = 3
+  Material = 1
+  Initial Condition = 3
+End
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Initial Condition 1
+ Displacement 1 = Real 0.0 
+ Displacement 2 = Real 0.0 
+ Displacement 3 = Real 0.0 
+End
+
+Initial Condition 2
+  Zs = Equals Zs_init
+End
+
+Initial Condition 3
+  Zb = Equals Zb_init 
+  Zbed = Equals Zbed_init
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Body Force 1
+  Stress BodyForce 1 = Real 0.0                          
+  Stress BodyForce 2 = Real 0.0
+  Stress BodyForce 3 = Real #selfweight
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Material 1
+  Density = Real #rhoi   
+
+  Youngs Modulus = Real 1.0e3
+  Poisson Ratio = Real 0.3
+
+  ! Bed condition
+  Min Zb = Equals Zbed !Variable Coordinate 1
+!    Real Procedure "../bin/USF_TR" "MinZsBottom"
+  Max Zb = Real 1.0e6
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!          SOLVERS                !!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!! No need to initialize grounded mask: already done in initialization run
+
+Solver 1  
+!  Exec Solver = never
+  Equation = "MapCoordinate"
+  Procedure = "StructuredMeshMapper" "StructuredMeshMapper"
+
+  Active Coordinate = Integer 3
+  Mesh Velocity Variable = String "dSdt"
+  Mesh Update Variable = String "dS"
+  Mesh Velocity First Zero = Logical True
+
+  Top Surface Variable Name = String "Zs"
+  Bottom Surface Variable Name = String "Zb"
+
+  Displacement Mode = Logical False 
+  Correct Surface = Logical True
+  Minimum Height = Real 2.0  !!1.0
+End
+
+!! GroundedMask is updated with the new mesh geometry
+Solver 2
+!  Exec Solver = never
+  Equation = GroundedMask2
+  Procedure = "ElmerIceSolvers" "GroundedSolver"
+  Variable = GroundedMask
+  Variable DOFs = 1
+
+  Toler = Real #GLTolerance
+
+  Bedrock Material = String "Min Zb"
+!  Bedrock Variable = String "Zbed"
+
+  SaveGL = Logical True
+  Save File Name = String "limit_grounded.dat"
+End
+
+Solver 3
+!  Exec Solver = never
+   Equation = "UpdateExport"
+   Procedure = File "ElmerIceSolvers" "UpdateExport"
+!   Variable = -nooutput "dumy"
+
+   Exported Variable 1 = -dofs 1 "Zs"
+End
+
+Solver 4
+!  Exec Solver = never
+   Equation = "UpdateExport2"
+   Procedure = File "ElmerIceSolvers" "UpdateExport"
+!   Variable = -nooutput "dumy"
+
+   Exported Variable 1 = -dofs 1 "Zb"
+   Exported Variable 2 = -dofs 1 "Zbed"
+End
+
+!!Elasticity
+Solver 5
+!  Exec Solver = never
+  Equation = String "Stress Analysis"
+  Variable = "Displacement"
+  Variable Dofs = 3
+
+  Calculate Stresses =  Logical True
+  Calculate Principal = Logical True
+  Linear System Solver = Direct         
+  Linear System Direct Method = MUMPS
+  Mumps percentage increase working space = Integer 1000
+
+!  Linear System Solver = Iterative
+!  Linear System Max Iterations = 5000
+!  Linear System Iterative Method = BiCGStab
+!  Linear System Preconditioning = ILU0
+!  Linear System Convergence Tolerance = Real 1.0e-9
+
+  Steady State Convergence Tolerance = Real 1.0e-3
+End
+
+!! Save some fields on top surface
+Solver 6
+! Exec Solver = never
+  Equation = String "none"
+  Exec Solver = "After timestep"
+  Exec interval = 1
+  Procedure = "../bin/SaveLine_Fixed" "SaveLine"
+  Filename = "../ScalarOutput/SurfaceOutput_$Name".dat"
+  File Append = Logical True
+  Parallel Reduce = Logical True
+
+  Variable 1 = "Displacement 1"
+  Variable 2 = "Displacement 2"
+  Variable 3 = "Displacement 3"
+  Variable 4 = "vonmises"
+  Variable 5 = "Principal Stress 1"
+  Variable 6 = "Principal Stress 2"
+  Variable 7 = "Principal Stress 3"
+End
+ 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Equation 1
+  Active Solvers(3) = 1 5 6
+End
+
+Equation 2
+  Active Solvers(1) = 3
+End
+
+! Bottom Surface
+Equation 3
+  Active Solvers(2) = 2 4 
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! lateral side of the glacier 
+Boundary Condition 1
+  Target Boundaries = 1
+
+  Normal-Tangential Displacement = Logical True 
+  Displacement 1 = Real 0.0
+!  Displacement 2 = Real 0.0
+!  Displacement 3 = Real 0.0
+End
+
+! cavity roof and Bedrock 
+Boundary Condition 2
+!!! this BC is equal to body no. 3 !!!
+  Body Id = 3
+
+!! NO SLIDING CASE FOR CAVITY !!
+  Displacement 1 = Real 0.0
+  Displacement 1 Condition = Variable GroundedMask
+    Real LUA "tx[0] + 0.5" 
+  
+  Displacement 2 = Real 0.0
+  Displacement 2 Condition = Variable GroundedMask
+    Real LUA "tx[0] + 0.5" 
+
+  Displacement 3 = Real 0.0
+  Displacement 3 Condition = Variable GroundedMask
+    Real LUA "tx[0] + 0.5" 
+
+End
+
+! Upper Surface -> Natural condition, i.e no stress
+Boundary Condition 3
+!!! this BC is equal to body no. 2 !!!
+  Body Id = 2
+  Save Line = Logical True
+End

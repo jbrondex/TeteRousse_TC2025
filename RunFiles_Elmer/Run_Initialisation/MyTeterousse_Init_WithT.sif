@@ -1,0 +1,258 @@
+check keywords warn
+echo on
+
+!---LUA BEGIN 
+! function TestContact(zb,bed) 
+!   if zb > (bed+0.01) then return -1.0 else return 1.0 end 
+! end 
+!
+! function IfThenElse(condition,t,f) 
+!   if condition then return t else return f end 
+! end 
+!---LUA END 
+
+! Name of output files
+$Name = "RunSteadyInit_InitGeoAndGMAndT_"
+
+! Define the parameter in MPa - a - m
+#yearinsec = 365.25*24*60*60
+#rhoi = 900.0/(1.0e6*yearinsec^2)   
+#rhow = 1000.0/(1.0e6*yearinsec^2) 
+#gravity = -9.81*yearinsec^2
+
+! Prefactor from Cuffey and Paterson (2010) in MPa^{-3} a^{-1}
+#A1 = 2.89165e-13*yearinsec*1.0e18 
+#A2 = 2.42736e-02*yearinsec*1.0e18 
+#Q1 = 60.0e3
+#Q2 = 115.0e3
+
+#GLTolerance = 1.0e-4
+
+Header
+  Mesh DB "." "teterousse"
+! Results Directory "results"
+End
+
+Constants
+  Water Density = Real #rhow
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Simulation
+  Coordinate System  =  Cartesian 3D 
+  Simulation Type = Steady        
+
+  Extruded Mesh Levels = Integer 16
+
+  Steady State Min Iterations = 1
+  Steady State Max Iterations = 1
+
+  Output File = "$Name".result"
+  Post File = "$Name".vtu"
+  max output level = 3 
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! The ice 
+Body 1
+  Equation = 1
+End
+
+! The Upper Free surface
+Body 2
+  Equation = 2
+  Body Force = 2
+End
+
+! The Cavity Free surface
+Body 3
+  Equation = 3
+  Body Force = 3
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Body Force 2
+  Zs_init = Equals ZsDEM
+End
+
+Body Force 3
+  Zb_init = Equals ZbDEM
+  Zbed_init = Equals BedDEM
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Solver 1
+  Exec Solver = "Before All"
+  Equation = "Read DEMs"
+
+  Procedure = "ElmerIceSolvers" "Grid2DInterpolator"
+
+  ! Bedrock DEM
+  Variable 1 = String "bedDEM"
+  Variable 1 data file = File "./../../Data/Topo/MNTBedInf2014.dat"
+  Variable 1 x0 = Real 947700.0d0
+  Variable 1 y0 = Real 2104850.0d0
+  Variable 1 lx = Real 600.0
+  Variable 1 ly = Real 350.0 
+  Variable 1 Nx = Integer 301
+  Variable 1 Ny = Integer 176
+  Variable 1 Invert = Logical False 
+  Variable 1 Fill = Logical False 
+  Variable 1 Position Tol = Real 1.0e-1
+  Variable 1 No Data = Real -9999.0
+  Variable 1 No Data Tol = Real 1.0 
+
+  ! Surface DEM
+  Variable 2 = String "ZsDEM"
+  Variable 2 data file = File "./../../Data/Topo/MNTSurf2011_lidar.dat"
+  Variable 2 x0 = Real 947700.0d0
+  Variable 2 y0 = Real 2104850.0d0
+  Variable 2 lx = Real 800.0
+  Variable 2 ly = Real 350.0 
+  Variable 2 Nx = Integer 268
+  Variable 2 Ny = Integer 118
+  Variable 2 Invert = Logical False 
+  Variable 2 Fill = Logical False 
+  Variable 2 Position Tol = Real 1.0e-1
+  Variable 2 No Data = Real -9999.0
+  Variable 2 No Data Tol = Real 1.0 
+
+  ! Zb DEM (include cavity roof)
+  Variable 3 = String "ZbDEM"
+  Variable 3 data file = File "./../../Data/Topo/MNTBedSup2014.dat"
+  Variable 3 x0 = Real 947700.0d0
+  Variable 3 y0 = Real 2104850.0d0
+  Variable 3 lx = Real 600.0
+  Variable 3 ly = Real 350.0 
+  Variable 3 Nx = Integer 301
+  Variable 3 Ny = Integer 176
+  Variable 3 Invert = Logical False 
+  Variable 3 Fill = Logical False 
+  Variable 3 Position Tol = Real 1.0e-1
+  Variable 3 No Data = Real -9999.0
+  Variable 3 No Data Tol = Real 1.0 
+End 
+
+Solver 2
+   Exec Solver = "Before Simulation"
+   Equation = "UpdateExport"
+   Procedure = File "ElmerIceSolvers" "UpdateExport"
+
+   Exported Variable 1 = -dofs 1 "BedDEM"
+   Exported Variable 2 = -dofs 1 "ZsDEM"
+   Exported Variable 3 = -dofs 1 "ZbDEM"
+   Exported Variable 4 = -dofs 1 "Zbed_init"
+   Exported Variable 5 = -dofs 1 "Zb_init"
+   Exported Variable 6 = -dofs 1 "Zs_init"
+   Exported Variable 7 = -dofs 1 "Tinit"
+End
+ 
+
+!! Execute once before simu to initialize grounded mask
+Solver 3
+  Exec Solver = Before Simulation
+  Equation = "GroundedMask"
+  Procedure = "ElmerIceSolvers" "GroundedSolver"
+  Variable = GroundedMaskInit
+  Variable DOFs = 1
+  
+  Bedrock Variable = String "Zbed_init"
+
+  Toler = Real #GLTolerance
+End
+
+Solver 4
+  Equation = "MapCoordinate"
+  Procedure = "StructuredMeshMapper" "StructuredMeshMapper"
+
+  Active Coordinate = Integer 3
+  Mesh Velocity Variable = String "dSdt"
+  Mesh Update Variable = String "dS"
+  Mesh Velocity First Zero = Logical True
+
+  Top Surface Variable Name = String "Zs_init"
+  Bottom Surface Variable Name = String "Zb_init"
+
+  Displacement Mode = Logical False 
+  Correct Surface = Logical True
+  Minimum Height = Real 1.0
+End
+
+!! GroundedMask is updated with the new mesh geometry
+Solver 5
+  Equation = GroundedMask2
+  Procedure = "ElmerIceSolvers" "GroundedSolver"
+  Variable = GroundedMaskInit
+  Variable DOFs = 1
+
+  Toler = Real #GLTolerance
+
+  Bedrock Variable = String "Zbed_init"
+
+  SaveGL = Logical True
+  Save File Name = String "limit_grounded.dat"
+End
+
+Solver 6
+  Equation = "Interpolate T field"
+
+  Procedure = "./../bin/My_Grid2DVerticalInterpolator" "My_Grid2DVerticalInterpolator"
+
+  ! Bedrock DEM
+  Variable 1 = String "Tinit"
+  Variable 1 data file = File "./../../Data/Temperature/VerticallyExtrapolated_2D_Temperature.dat"
+  Variable 1 x0 = Real 947816.56265d0
+  Variable 1 z0 = Real 3092.966100d0
+  Variable 1 lx = Real 454.0
+  Variable 1 lz = Real 176.0 
+  Variable 1 Nx = Integer 228
+  Variable 1 Nz = Integer 89
+  Variable 1 Invert = Logical False 
+  Variable 1 Fill = Logical False 
+  Variable 1 Position Tol = Real 1.0e-1
+  Variable 1 No Data = Real -9999.0
+  Variable 1 No Data Tol = Real 1.0 
+End
+
+!!Save GroundedMaskInit for post-processing purpose
+Solver 7
+  Equation = String "none"
+  Exec Solver = "After timestep"
+  Exec interval = 1
+  Procedure = "./../bin/SaveLine_Fixed" "SaveLine"
+  Filename = "./../ScalarOutput/GroundedMaskInit".dat"
+  File Append = Logical True   
+  Parallel Reduce = Logical True   
+
+  Variable 1 = "GroundedMaskInit"
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Equation 1
+  Active Solvers(5) = 1 2 4 6 7
+End
+
+Equation 2
+  Active Solvers(1) = 2
+End
+
+Equation 3
+  Active Solvers(3) = 2 3 5
+End
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! lateral side of the glacier 
+Boundary Condition 1
+  Target Boundaries = 1
+End
+
+! cavity roof and Bedrock 
+Boundary Condition 2
+  Body Id = 3
+  Save Line = Logical True
+End
+
+! Upper Surface
+Boundary Condition 3
+  Body Id = 2
+End

@@ -1,0 +1,8 @@
+all: mesh_gag 
+
+mesh_gag:
+	python3 Makegeo.py
+	gmsh teterousse.geo -1 -2
+        ElmerGrid 14 2 teterousse.msh -autoclean -metis 8 4
+        rm teterousse.geo teterousse.msh
+

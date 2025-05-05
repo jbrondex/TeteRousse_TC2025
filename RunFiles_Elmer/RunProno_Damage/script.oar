@@ -1,0 +1,45 @@
+#################################
+#OAR --name MyTeteRousse
+#OAR --project elmerice
+
+#OAR -O /bettik/brondexj/TeteRousse/Simu.%jobid%.out
+#OAR -E /bettik/brondexj/TeteRousse/Simu.%jobid%.err
+
+#OAR -l nodes=1/core=8,walltime=36:00:00
+
+#################################
+# Exit on error
+set -e
+
+#################################
+# Calcul du nombre de noeuds, et nombre de cores
+nbcores=`cat $OAR_NODE_FILE|wc -l`
+# Number of nodes
+nbnodes=`cat $OAR_NODE_FILE|sort|uniq|wc -l`
+
+echo "############"
+echo "Nbre de noeuds: " $nbnodes
+echo "Nbre de coeurs: " $nbcores
+echo "############"
+echo 
+#################################
+### let's go
+ulimit -s unlimited
+export OMP_NUM_THREADS=1
+
+#### Load last version of Elmer for Particle Solver ###
+module unload elmerfem
+module load elmerfem/elmerfem-0f18c8fec_intel21
+
+##### keep track of elmer version which is run ###
+echo "Job ID : $OAR_JOB_ID" >> ELMER_BIN.txt
+echo "" >> ELMER_BIN.txt
+x="which ElmerSolver"
+y=$(eval "$x")
+echo "Elmer Version : $y" >> ELMER_BIN.txt
+echo "" >> ELMER_BIN.txt
+echo "$(module list)" >> ELMER_BIN.txt
+
+### Run code ###
+mpirun -np $nbcores ElmerSolver_mpi <NAME>.sif > ./output/simu.<NAME>.$OAR_JOB_ID.out
+
