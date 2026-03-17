@@ -57,6 +57,8 @@ scipy==1.15.2
 │   :                                
 │   ├── RunProno_NoDamage               <- All files to run pronostic simu without damage with sensitivity tests on temperature field and the way water pressure is applied  
 │   :                                
+│   ├── Run_ViscoElastic                <- All files to run pronostic simu based on visco-elasticity that are presented in the supplementary material  
+│   :                                
 │   ├── SRC                             <- Source code that is not available in the distribution but was developped specifically for this study 
 │   :                                
 ```
