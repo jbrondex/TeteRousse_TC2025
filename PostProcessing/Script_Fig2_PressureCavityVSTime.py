@@ -103,9 +103,10 @@ if __name__ == "__main__":
             continue
         ### Convert day in date
         CorrespDate = RefStartDate+timedelta(days=int(Dday))
+        print('Date of point =', CorrespDate)
         ###Scatter Plot of Water Level for considered day
         if not Dday == np.max(DayOfSimuPumping2010):
-            plt.scatter(CorrespDate, WaterLevel_Interp[j], facecolor=scalarMap.to_rgba(Dday), edgecolors = 'k', s=100, zorder=3)
+            plt.scatter(CorrespDate, WaterLevel_Interp[j], facecolor=scalarMap.to_rgba(Dday), edgecolors = 'k', s=130, zorder=3)
         else:
-            plt.scatter(CorrespDate, WaterLevel_Interp[j], facecolor=scalarMap.to_rgba(Dday), marker='d', edgecolors = 'k', s=150, zorder=3)
+            plt.scatter(CorrespDate, WaterLevel_Interp[j], facecolor='r', marker='d', edgecolors = 'k', s=250, zorder=3)
     plt.show()

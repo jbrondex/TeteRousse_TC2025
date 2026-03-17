@@ -230,7 +230,7 @@ if __name__ == "__main__":
     fig1, axes = plt.subplots(nrows, ncols, figsize=(15, 12), sharex=True, sharey=True) #, constrained_layout=True)  # , gridspec_kw={'hspace': -0.15})
     plt.subplots_adjust(bottom=0.2,wspace=0.1)
     ### Start loop on the various criterion considered
-    for idx,(Criterion,Title) in enumerate(zip(['SigmaI', 'SigmaVM', 'SigmaHa', 'SigmaC'], ['Max. principal stress', 'von Mises', 'Hayurst', 'Coulomb'])):
+    for idx,(Criterion,Title) in enumerate(zip(['SigmaI', 'SigmaVM', 'SigmaHa', 'SigmaC'], ['Max. principal stress', 'von Mises', 'Hayhurst', 'Coulomb'])):
         ### Get proper ax
         row, col = divmod(idx, ncols)  # Get row, col index from the idx
         ax = axes[row, col]  # Select the axis in the grid
@@ -296,7 +296,7 @@ if __name__ == "__main__":
             if Df_plot['IsCircular'].all():  ##different colors for circular crevasses and other crevasses
                 col = Col_Crevasses_Circ
             else:
-                col = Col_Crevasses_Other
+                continue #col = Col_Crevasses_Other
             ax.plot(Df_plot['X'].values/1000, Df_plot['Y'].values/1000, color=col, linestyle='-', linewidth=2)
     # Add a common colorbar to all subplots below the figure
     cbar_ax = fig1.add_axes([0.15, 0.082, 0.7, 0.027])  # [left, bottom, width, height]
@@ -411,8 +411,8 @@ if __name__ == "__main__":
                     ###Interpolate the SigmaEq of the day on the considered transect
                     SigmaEq = Interpolate_field(Data_Simu_NoD_Today, Criterion, coord_transect[0], coord_transect[1])
                     ###If criterion is MPS remove negative values
-                    # if Criterion == 'SigmaI':
-                    #     SigmaEq[ SigmaEq<0 ]=0
+                    if Criterion == 'SigmaI':
+                        SigmaEq[ SigmaEq<0 ]=0
                     ###Plot interpolated sigmaI as a function of distance along transect
                     ax.plot(dist_along_transect, SigmaEq*1000, color=scalarMap.to_rgba(day), linestyle='-', linewidth=2)
                     ax.set_xlim([-1, np.max(dist_along_transect)+0.5])

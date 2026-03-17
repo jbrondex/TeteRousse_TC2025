@@ -142,12 +142,12 @@ if __name__ == "__main__":
     ## Where pressure applies: cavity only: 'PCavityOnly', restricted to a conduit: 'PRestricted', everywhere above cold/temperate transition: 'PNotRestric'
     Case = 'PCav'
     T = 'Tmap' ##'Temperate', 'Tminus2' or 'Tmap'
-    Col_Crevasses_Circ = '#FF0000' ###'#800080' ###Color for representation of circular crevasses
+    Col_Crevasses_Circ = '#990000'##'#FF0000' ###'#800080' ###Color for representation of circular crevasses
     Col_Crevasses_Other = '#800080' ###Color for representation of non circular crevasses
     Col_Cavity = '#00FFFF'###color for representation of cavity
     Col_Transect = 'k'###color for representation of transect
 
-    Colormap_for_stressmap = 'RdBu_r' ###Colorm map to choose for map of stress
+    Colormap_for_stressmap = 'RdBu' ###Colorm map to choose for map of stress
 #    cmap = cmx.get_cmap(Colormap_for_stressmap )
 #    cmap = colors.LinearSegmentedColormap.from_list("viridis_darker", cmap(np.linspace(0.2, 1, 256)))
 
@@ -216,14 +216,14 @@ if __name__ == "__main__":
 
     ###~~~~~~~Prepare the figure 1 : plot with the surface pressure
     ###Prepare the plot
-    fig1 = plt.figure(1, figsize=(40, 20))
-    plt.xlabel(r'X [km]', fontsize=22)
-    plt.ylabel(r'Y [km]', fontsize=22)
-    plt.tick_params(labelsize=18)  # fontsize of the tick labels
-    plt.grid(True)
-    plt.grid(alpha=0.5)
+    # Create a single figure and axis
+    fig1, ax = plt.subplots(figsize=(6, 6), constrained_layout=True)
+    ax.set_xlabel(r'X [km]', fontsize=22)
+    ax.set_ylabel(r'Y [km]', fontsize=22)
+    ax.tick_params(labelsize=18)  # fontsize of the tick labels
+    ax.grid(True)
+    ax.grid(alpha=0.5)
     ###Force x and y axis to same scale
-    ax = plt.gca()
     ax.set_aspect('equal', adjustable='box')
     # plt.xlim([(np.floor(np.min(Df_LastDayPump2010['X']))-10)/1000, (np.floor(np.max(Df_LastDayPump2010['X']))+10)/1000])
     # plt.ylim([(np.floor(np.min(Df_LastDayPump2010['Y']))-10)/1000, (np.floor(np.max(Df_LastDayPump2010['Y']))+10)/1000])
@@ -233,19 +233,18 @@ if __name__ == "__main__":
     X, Y = np.meshgrid(x, y)
     p = Interpolate_field(Df_LastDayPump2010,'Pressure',X,Y)
     #shading
-    clevs=np.arange(-150,150.1,25) ## cbar for shading
+    clevs=np.arange(-150,150.1,10) ## cbar for shading
     cmap=Colormap_for_stressmap
     #colorbar
     levs_ticks=np.arange(-150,150.1,50)
     ###Fills up the map with colors for SigmaEq
-    CS1 = plt.contourf(X/1000, Y/1000, p*1000, clevs, cmap=cmap,extend='both')
-    plt.plot(xc / 1000, yc / 1000, color='k', linewidth=2)
+    CS1 = ax.contourf(X/1000, Y/1000, p*1000, clevs, cmap=cmap,extend='both')
+    ax.plot(xc / 1000, yc / 1000, color='k', linewidth=2)
     ###Show colorbar
     # cbar = ax.colorbar(CS1, ticks=levs_ticks, orientation='vertical', label=r'$\sigma_\mathrm{eq}$ [kPa]')
     ###Below we remove colors that are outside of glacier contour
     clippath = mpltPath(np.c_[xc/1000, yc/1000])
     patch = PathPatch(clippath, facecolor='none')
-    ax = plt.gca()
     ax.add_patch(patch)
     for c in [CS1]:
         c.set_clip_path(patch)
@@ -274,11 +273,12 @@ if __name__ == "__main__":
         if Df_plot['IsCircular'].all():  ##different colors for circular crevasses and other crevasses
             col = Col_Crevasses_Circ
         else:
-            col = Col_Crevasses_Other
-        plt.plot(Df_plot['X'].values/1000, Df_plot['Y'].values/1000, color=col, linestyle='-', linewidth=2)
-    # Add a common colorbar to all subplots below the figure
-    cbar_ax = fig1.add_axes([0.15, 0.082, 0.7, 0.027])  # [left, bottom, width, height]
-    fig1.colorbar(CS1, ticks=levs_ticks, cax=cbar_ax, orientation='horizontal', label=r'Pressure [kPa]')
+            continue #col = Col_Crevasses_Other
+        plt.plot(Df_plot['X'].values/1000, Df_plot['Y'].values/1000, color=col, linestyle='-', linewidth=2.3)
+    # Horizontal colorbar
+    cbar = fig1.colorbar(CS1, ax=ax, ticks=levs_ticks, orientation='horizontal', fraction=0.06, pad=0.05)
+    cbar.set_label(r'Pressure [kPa]', fontsize=20)
+    cbar.ax.tick_params(labelsize=18)
     ###Show map
     plt.show()
 

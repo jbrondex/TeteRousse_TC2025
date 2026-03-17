@@ -81,14 +81,17 @@ if __name__ == "__main__":
     ####~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
     ####~~~~~~~~~~~   LOAD ALL DATA AND PLOT DIRECTLY IN THIS PART OF THE CODE   ~~~~~~~~~~~~~####
     ####~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
-    Col_Crevasses_Circ = '#FF0000' ###'#800080' ###Color for representation of circular crevasses
+    Col_Crevasses_Circ = '#00ff00'###'#FF0000' ###'#800080' ###Color for representation of circular crevasses
     Col_Crevasses_Other = '#800080' ###Color for representation of non circular crevasses
     Col_Cavity = '#00FFFF'###color for representation of cavity
     Col_Transect = 'lightgrey'###color for representation of transect
 
-    Colormap_for_stressmap = 'viridis' ###Colorm map to choose for map of stress
+ #   Colormap_for_stressmap = 'viridis' ###Colorm map to choose for map of stress
+    Colormap_for_stressmap = 'RdBu_r' ###Colorm map to choose for map of stress
     cmap = cmx.get_cmap(Colormap_for_stressmap )
-    cmap = colors.LinearSegmentedColormap.from_list("viridis_darker", cmap(np.linspace(0.2, 1, 256)))
+    # cmap = colors.LinearSegmentedColormap.from_list("viridis_darker", cmap(np.linspace(0.2, 1, 256)))
+    clevwide = np.arange(-120.01, 120.01, 10)
+    levs_tickwide = np.round(np.arange(-120.01, 120.01, 40))
     ################################################################
     ####  OPEN DATA CORRESPONDING TO CREVASSES AND GROUNDEDMASK ####
     ################################################################
@@ -175,28 +178,33 @@ if __name__ == "__main__":
         elif law=='VNL':
             df_nocav =  Data_Simu_VNL[Data_Simu_VNL['Case']=='NoCavity']
             df_cav = Data_Simu_VNL[Data_Simu_VNL['Case']=='EmptyCavity']
-            Title = 'Glen\'s law'
+            Title = 'Glen-Nye law'
         ##get proper ax
         ax = axes[k]
         ax.set_xlabel(r'X [km]', fontsize=22)
-        ax.set_ylabel(r'Y [km]', fontsize=22)
+        if k==0:
+            ax.set_ylabel(r'Y [km]', fontsize=22)
         ax.tick_params(labelsize=18)  # fontsize of the tick labels
-        ax.set_xlabel("")
-        ax.set_ylabel("")
-        ax.set_xticklabels([])  # Remove x labels
-        ax.set_yticklabels([])  # Remove y labels
+        # ax.set_xlabel("")
+        # ax.set_ylabel("")
+        # ax.set_xticklabels([])  # Remove x labels
+        # ax.set_yticklabels([])  # Remove y labels
         ax.grid(True)
         ax.grid(alpha=0.5)
         ax.set_title(Title, fontsize=21, weight='bold')
         ###Force x and y axis to same scale
         ax.set_aspect('equal', adjustable='box')
+        ###SigmaI is max principal stress and at the surface always one of the principal stress is zero
+        ### Therefore SigmaI is either positive or zero. Negative values of SigmaI are numerical artefacts
+        df_nocav.loc[df_nocav["SigmaI"] < 0, "SigmaI"] = 0
+        df_cav.loc[df_cav["SigmaI"] < 0, "SigmaI"] = 0
         ###Poject SigmaI on interpolation grid
         SigmaI_NoCav = Interpolate_field(df_nocav, 'SigmaI', X, Y)
         SigmaI_Cav = Interpolate_field(df_cav, 'SigmaI', X, Y)
         ###shading
-        clevs=np.arange(-0.01,121,10) ## cbar for shading
+        clevs=clevwide #np.arange(-0.01,121,10) ## cbar for shading
         #colorbar
-        levs_ticks=np.arange(0.0,121,20)
+        levs_ticks= levs_tickwide ##np.arange(0.0,121,20)
         ###Fills up the map with colors for SigmaEq
         CS1 = ax.contourf(X/1000, Y/1000, (SigmaI_Cav-SigmaI_NoCav)*1000, clevs, cmap=cmap,extend='both')
         ax.plot(xc / 1000, yc / 1000, color='k', linewidth=2)
@@ -214,8 +222,8 @@ if __name__ == "__main__":
             if Df_plot['IsCircular'].all():  ##different colors for circular crevasses and other crevasses
                 col = Col_Crevasses_Circ
             else:
-                col = Col_Crevasses_Other
-            ax.plot(Df_plot['X'].values/1000, Df_plot['Y'].values/1000, color=col, linestyle='-', linewidth=2)
+                continue #col = Col_Crevasses_Other
+            ax.plot(Df_plot['X'].values/1000, Df_plot['Y'].values/1000, color=col, linestyle='-', linewidth=2.3)
         ###Plot cavity contour
         ax.plot(cavity_contour[:, 0]/1000,cavity_contour[:, 1]/1000,color=Col_Cavity,linestyle='-',linewidth=2.5)
         ###Make a horizontal color bar common to all subplots
@@ -223,7 +231,7 @@ if __name__ == "__main__":
         cbar_ax = fig.add_axes([0.2, 0.08, 0.6, 0.03])  # [left, bottom, width, height]
         # Create a single colorbar for all subplots
         cbar = plt.colorbar(CS1, cax=cbar_ax, ticks=levs_ticks, orientation='horizontal')
-        cbar.set_label(r'$\sigma_\mathrm{I}$ [kPa]', fontsize=20)
+        cbar.set_label(r'$\Delta \sigma_\mathrm{I}$ [kPa]', fontsize=20)
         cbar.ax.tick_params(labelsize=18)  # Adjust tick label size
 
 

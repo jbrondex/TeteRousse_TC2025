@@ -111,11 +111,11 @@ plt.rc('legend', fontsize=26)
 
 nrows = 3 ###Ux, Uy, Uz
 ncols = 3 ###elastic, viscous, observed
-fig, axes = plt.subplots(nrows, ncols, figsize=(15, 13), sharex= True , sharey= True, constrained_layout=True)
-# # Common xlabel for all subplots
-# fig.text(0.5, -0.003, r'X [m]', va='center', rotation='horizontal', fontsize=21)
-# # Common ylabel for all subplots
-# fig.text(-0.003, 0.5, r'Y [m]', va='center', rotation='vertical', fontsize=21)
+fig, axes = plt.subplots(nrows, ncols, figsize=(15, 12), sharex= True , sharey= True, constrained_layout=True)
+# Common xlabel for all subplots
+fig.text(0.5, 0.005, r'X [km]', va='center', rotation='horizontal', fontsize=24)
+# Common ylabel for all subplots
+fig.text(0.005, 0.5, r'Y [km]', va='center', rotation='vertical', fontsize=24)
 # pimp style
 for i in range(nrows): ###
     for j in range(ncols):
@@ -145,39 +145,34 @@ if __name__ == "__main__":
     # StartDate_str = '28092011'  ###start date for displacement computation
     # FinishDate_str = '21102011' ###finish date for displacement computation
     # Sequence = 'Pumping2011'
-
-    ####The parameters of the consitutive law to consider : E for elastic, T for glen
-    E = '1GPa' ###'1GPa' or '9GPa'
-    T = 'Tmap' ###'Tmap', 'Tminus2' or 'Temperate'
     ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
     ### Parameter for the plot
     # shading
-    cmap_glen = 'coolwarm'
-    cmap_elastic = 'BrBG'
+    cmap = 'coolwarm'
     color_resolution = 4  ##number of color shades per level ticks
     norm = None ##by default (to keep only positive or negative side of colorbar)
     if Sequence == 'Pumping2010':
-        dx_min_el = -0.16*10## in mm !
-        dx_max_el = 0.161*10## in mm !
-        lev_ticks_range_dx_el = 0.08*10 ##one tick every ?
+        dx_min_el = -0.16
+        dx_max_el = 0.161
+        lev_ticks_range_dx_el = 0.08 ##one tick every ?
         norm_dx_el = norm
         dx_min_obs = -14.0
         dx_max_obs = 14.1
         lev_ticks_range_dx_obs = 7 ##one tick every ?
         norm_dx_obs = norm
         #####
-        dy_min_el = -0.10*10## in mm !
-        dy_max_el = 0.11*10## in mm !
-        lev_ticks_range_dy_el = 0.05*10 ##one tick every ?
+        dy_min_el = -0.10
+        dy_max_el = 0.11
+        lev_ticks_range_dy_el = 0.05 ##one tick every ?
         norm_dy_el = norm
         dy_min_obs =-10.0
         dy_max_obs =10.1
         lev_ticks_range_dy_obs = 5 ##one tick every ?
         norm_dy_obs = norm
         #####
-        dz_min_el =-0.24*10## in mm !
-        dz_max_el =0.001*10## in mm !
-        lev_ticks_range_dz_el = 0.08*10 ##one tick every ?
+        dz_min_el =-0.24
+        dz_max_el =0.001
+        lev_ticks_range_dz_el = 0.08 ##one tick every ?
         norm_dz_el = TwoSlopeNorm(vmin=dz_min_el, vcenter=0.0, vmax=dz_max_el)
         dz_min_obs =-24.0
         dz_max_obs =0.1
@@ -185,27 +180,27 @@ if __name__ == "__main__":
         norm_dz_obs = TwoSlopeNorm(vmin=dz_min_obs, vcenter=0.0, vmax=dz_max_obs)
     ################################################################
     elif Sequence == 'Refill20102011':
-        dx_min_el = -0.05*10## in mm !
-        dx_max_el = 0.051*10## in mm !
-        lev_ticks_range_dx_el = 0.025*10 ##one tick every ?
+        dx_min_el = -0.05
+        dx_max_el = 0.051
+        lev_ticks_range_dx_el = 0.025 ##one tick every ?
         norm_dx_el = norm
         dx_min_obs = -6.0
         dx_max_obs = 0.1
         lev_ticks_range_dx_obs = 1.5 ##one tick every ?
         norm_dx_obs = TwoSlopeNorm(vmin=dx_min_obs, vcenter=0.0, vmax=dx_max_obs)
         #####
-        dy_min_el = -0.04*10## in mm !
-        dy_max_el = 0.041*10## in mm !
-        lev_ticks_range_dy_el = 0.02*10 ##one tick every ?
+        dy_min_el = -0.04
+        dy_max_el = 0.041
+        lev_ticks_range_dy_el = 0.02 ##one tick every ?
         norm_dy_el = norm
         dy_min_obs =-2.0
         dy_max_obs =2.1
         lev_ticks_range_dy_obs = 1 ##one tick every ?
         norm_dy_obs = norm
         #####
-        dz_min_el =0.000*10## in mm !
-        dz_max_el =0.11*10## in mm !
-        lev_ticks_range_dz_el = 0.025*2*10 ##one tick every ?
+        dz_min_el =0.000
+        dz_max_el =0.11
+        lev_ticks_range_dz_el = 0.025*2 ##one tick every ?
         norm_dz_el = TwoSlopeNorm(vmin=dz_min_el-0.00001, vcenter=0.0, vmax=dz_max_el)
         dz_min_obs =-5
         dz_max_obs =5.1
@@ -213,27 +208,27 @@ if __name__ == "__main__":
         norm_dz_obs = norm
     ##############################################################################
     elif Sequence == 'Pumping2011':
-        dx_min_el = -0.30*10## in mm !
-        dx_max_el = 0.31*10## in mm !
-        lev_ticks_range_dx_el = 0.15*10 ##one tick every ?
+        dx_min_el = -0.30
+        dx_max_el = 0.31
+        lev_ticks_range_dx_el = 0.15 ##one tick every ?
         norm_dx_el = norm
         dx_min_obs = -10.0
         dx_max_obs = 10.1
         lev_ticks_range_dx_obs = 5 ##one tick every ?
         norm_dx_obs = norm
         #####
-        dy_min_el = -0.25*10## in mm !
-        dy_max_el = 0.26*10## in mm !
-        lev_ticks_range_dy_el = 0.125*10 ##one tick every ?
+        dy_min_el = -0.25
+        dy_max_el = 0.26
+        lev_ticks_range_dy_el = 0.125 ##one tick every ?
         norm_dy_el = norm
         dy_min_obs =-8.0
         dy_max_obs =8.1
         lev_ticks_range_dy_obs = 4 ##one tick every ?
         norm_dy_obs = norm
         #####
-        dz_min_el =-0.6*10## in mm !
-        dz_max_el =0.001*10## in mm !
-        lev_ticks_range_dz_el = 0.2*10 ##one tick every ?
+        dz_min_el =-0.6
+        dz_max_el =0.001
+        lev_ticks_range_dz_el = 0.2 ##one tick every ?
         norm_dz_el = TwoSlopeNorm(vmin=dz_min_el, vcenter=0.0, vmax=dz_max_el)
         dz_min_obs =-20.0
         dz_max_obs =0.1
@@ -263,6 +258,13 @@ if __name__ == "__main__":
     xy_cavity_sorted = sort_clockwise(xy_cavity)
     ##close contour
     cavity_contour = np.vstack([xy_cavity_sorted, xy_cavity_sorted[0]])
+    ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
+    ###Open Data corresponding to sonar contour (paper Gag 2011)
+    Pathroot_GLsonar = Path('/home/brondexj/BETTIK/TeteRousse/MyTeterousse_GeoGag/Data/.')
+    Filename_GLsonar = 'limite_cavity_ordered.xyz'
+    Col_Names_GLsonar = [ 'X', 'Y', 'Z', 'dummy']
+    ###load file as dataframe
+    Df_GLsonar = pd.read_csv(Pathroot_GLsonar.joinpath(Filename_GLsonar), names=Col_Names_GLsonar, delim_whitespace=True)
     ##############################################
     ##############################################
     ##### LOAD DATA AND DO SOME PROCESSING #######
@@ -300,8 +302,8 @@ if __name__ == "__main__":
     ###########################################################################
     ###load and process data for elastic simulations (two diag simulations)####
     ###########################################################################
-    filename_StartDay = './ScalarOutput/SurfaceOutput_DiagElastic_Poisson03_E{}_CavityPressure_{}_NoDispLat_.dat'.format(E, StartDate_str)
-    filename_FinishDay = './ScalarOutput/SurfaceOutput_DiagElastic_Poisson03_E{}_CavityPressure_{}_NoDispLat_.dat'.format(E, FinishDate_str)
+    filename_StartDay = './ScalarOutput/SurfaceOutput_DiagElastic_Poisson03_E1GPa_CavityPressure_{}_NoDispLat_.dat'.format(StartDate_str)
+    filename_FinishDay = './ScalarOutput/SurfaceOutput_DiagElastic_Poisson03_E1GPa_CavityPressure_{}_NoDispLat_.dat'.format(FinishDate_str)
     df_Elastic_StartDay = pd.read_csv(Pathroot.joinpath(filename_StartDay), names=Col_Names_Elastic, delim_whitespace=True)
     df_Elastic_FinishDay = pd.read_csv(Pathroot.joinpath(filename_FinishDay), names=Col_Names_Elastic, delim_whitespace=True)
     # Verify the first 3 columns are identical ['DayOfSimu', 'BC', 'NodeNumber'] (slight differences are seen for coordinates
@@ -339,42 +341,42 @@ if __name__ == "__main__":
     ####Open file
     if FinishDayNumber < -255: ###This is simu called Pumping 2010
         StartSimuDayNumber_ViscousSimu = -315  ###That's the day number corresponding to the beginning of simu pumping 2010
-        filename_viscous = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_P2010_tsp1d_Out5d_{}_.dat'.format(T)
+        filename_viscous = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_P2010_tsp1d_Out5d_Tmap_.dat'
         df_Viscous = pd.read_csv(Pathroot.joinpath(filename_viscous), names=Col_Names_Viscous, delim_whitespace=True)
         df_Viscous['TimestepSize'] = 1 ##This simu as a timestep of one day
         df_Viscous['DayofSimu'] = df_Viscous['TimestepSize']* (df_Viscous['Timestep']-1 )+StartSimuDayNumber_ViscousSimu
     elif -255 < StartDayNumber < 85 and FinishDayNumber < 85: ###This is simu called Refill20102011
         StartSimuDayNumber_ViscousSimu = -255  ###That's the day number corresponding to the beginning of simu refill 20102011
-        filename_viscous = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_Refill20102011_tsp5d_Out30d_{}_.dat'.format(T)
+        filename_viscous = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_Refill20102011_tsp5d_Out30d_Tmap_.dat'
         df_Viscous = pd.read_csv(Pathroot.joinpath(filename_viscous), names=Col_Names_Viscous, delim_whitespace=True)
         df_Viscous['TimestepSize'] = 5 ##This simu as a timestep of 5 days
         df_Viscous['DayofSimu'] = df_Viscous['TimestepSize'] * (df_Viscous['Timestep'] - 1) + StartSimuDayNumber_ViscousSimu
     elif StartDayNumber < 85 and 85 < FinishDayNumber < 105: ##Startday is in simu Refill20102011, Finish day is in simu Pumping2011
         StartSimuDayNumber_ViscousSimu_start = -255 ###That's the day number corresponding to the beginning of simu refill 20102011
-        filename_viscous_start = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_Refill20102011_tsp5d_Out30d_{}_.dat'.format(T)
+        filename_viscous_start = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_Refill20102011_tsp5d_Out30d_Tmap_.dat'
         df_Viscous_start = pd.read_csv(Pathroot.joinpath(filename_viscous_start), names=Col_Names_Viscous, delim_whitespace=True)
         df_Viscous_start['TimestepSize'] = 5 ##This simu as a timestep of 5 days
         df_Viscous_start['DayofSimu'] = df_Viscous_start['TimestepSize'] * (df_Viscous_start['Timestep'] - 1) + StartSimuDayNumber_ViscousSimu_start
         StartSimuDayNumber_ViscousSimu_finish = 85 ###That's the day number corresponding to the beginning of simu pumping 2011
-        filename_viscous_finish = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_P2011_tsp1d_Out5d_{}_.dat'.format(T)
+        filename_viscous_finish = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_P2011_tsp1d_Out5d_Tmap_.dat'
         df_Viscous_finish = pd.read_csv(Pathroot.joinpath(filename_viscous_finish), names=Col_Names_Viscous, delim_whitespace=True)
         df_Viscous_finish['TimestepSize'] = 1 ##This simu as a timestep of one day
         df_Viscous_finish['DayofSimu'] = df_Viscous_finish['TimestepSize'] * (df_Viscous_finish['Timestep'] - 1) + StartSimuDayNumber_ViscousSimu_finish
         df_Viscous = pd.concat([df_Viscous_start, df_Viscous_finish], ignore_index=True)
     elif 85 <StartDayNumber < 105 and 85 < FinishDayNumber < 105:###This is simu called Pumping2011
         StartSimuDayNumber_ViscousSimu = 85###That's the day number corresponding to the beginning of simu pumping 2011
-        filename_viscous = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_P2011_tsp1d_Out5d_{}_.dat'.format(T)
+        filename_viscous = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_P2011_tsp1d_Out5d_Tmap_.dat'
         df_Viscous = pd.read_csv(Pathroot.joinpath(filename_viscous), names=Col_Names_Viscous, delim_whitespace=True)
         df_Viscous['TimestepSize'] = 1##This simu as a timestep of one day
         df_Viscous['DayofSimu'] = df_Viscous['TimestepSize']* (df_Viscous['Timestep']-1 )+StartSimuDayNumber_ViscousSimu
     elif 85 < StartDayNumber < 105  and 105 < FinishDayNumber < 450: ##Startday is in simu Pumping2011, Finish day is in simu Refill20112012
         StartSimuDayNumber_ViscousSimu_start = 85 ###That's the day number corresponding to the beginning of simu Pumping 011
-        filename_viscous_start = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_P2011_tsp1d_Out5d_{}_.dat'.format(T)
+        filename_viscous_start = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_P2011_tsp1d_Out5d_Tmap_.dat'
         df_Viscous_start = pd.read_csv(Pathroot.joinpath(filename_viscous_start), names=Col_Names_Viscous, delim_whitespace=True)
         df_Viscous_start['TimestepSize'] = 1 ##This simu as a timestep of one day
         df_Viscous_start['DayofSimu'] = df_Viscous_start['TimestepSize'] * (df_Viscous_start['Timestep'] - 1) + StartSimuDayNumber_ViscousSimu_start
         StartSimuDayNumber_ViscousSimu_finish = 105 ###That's the day number corresponding to the beginning of simu refill20112012
-        filename_viscous_finish = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_Refill20112012_tsp5d_Out30d_{}_.dat'.format(T)
+        filename_viscous_finish = './ScalarOutput/SurfaceOutput_Prono_NoD_PCav_Refill20112012_tsp5d_Out30d_Tmap_.dat'
         df_Viscous_finish = pd.read_csv(Pathroot.joinpath(filename_viscous_finish), names=Col_Names_Viscous, delim_whitespace=True)
         df_Viscous_finish['TimestepSize'] = 5 ##This simu as a timestep of 5 days
         df_Viscous_finish['DayofSimu'] = df_Viscous_finish['TimestepSize'] * (df_Viscous_finish['Timestep'] - 1) + StartSimuDayNumber_ViscousSimu_finish
@@ -423,6 +425,7 @@ if __name__ == "__main__":
     filtered_df = df_Viscous[df_Viscous['DayofSimu'] == StartDayNumber]
     Particles_Coords_Start = filtered_df[['X', 'Y', 'Z']].values
     Particles_Coords[0, :, :] = Particles_Coords_Start
+    ###TO CHECK FROM HERE
     ###Now loop on time steps of the considered period (one tsp per day) to displace particle day after day
     for k,day_idx in enumerate(range(NewSimuDays[NewSimuDays == StartDayNumber].index[0],NewSimuDays[NewSimuDays == FinishDayNumber].index[0])):
         k =k+1##as k=0 is for initial condition
@@ -465,18 +468,9 @@ if __name__ == "__main__":
             df = df_Obs_DiffBetweenTwoDates
         ### loop on the three dimensions x,y,z
         for i,dim in enumerate(['X','Y','Z']):
+            print('Case =', case, 'for', dim)
             ###get proper dimension
             displacementfield_name='RelDisp{}'.format(dim)
-            ### Get the min and max disp only in the windows of interrest (i.e. around the cavity)
-            if case == 'Obs':
-                min_rel_disp = df[displacementfield_name].min()
-                max_rel_disp = df[displacementfield_name].max()
-            else:
-                filtered_df = df[(df['X'] >  np.min(df_Obs_DiffBetweenTwoDates['X'])) & (df['X'] < np.max(df_Obs_DiffBetweenTwoDates['X'])) & (df['Y'] > np.min(df_Obs_DiffBetweenTwoDates['Y'])) & (df['Y'] < np.max(df_Obs_DiffBetweenTwoDates['Y']))]
-                min_rel_disp = filtered_df[displacementfield_name].min()
-                max_rel_disp = filtered_df[displacementfield_name].max()
-            ###Print the min and max displacements in centimeters in each direction and for each cases
-            print('Sequence:', StartDate_str, 'to', FinishDate_str, ', Case :', case, ', Direction', dim, 'min disp in cm:',min_rel_disp*100, 'max disp in cm:',max_rel_disp*100)
             ###interpolate displacement of interest on the refined grid
             Interpolated_disp = Interpolate_field(df,displacementfield_name,X,Y)
             ###get proper ax
@@ -484,9 +478,9 @@ if __name__ == "__main__":
             ax.set_xlim([0, xmax-xmin])
             ax.set_ylim([0, ymax-ymin])
             if i==0 and j==0:
-                ax.set_title('Elastic E = 1 GPa', fontsize=21, weight='bold')
+                ax.set_title('Model Elastic', fontsize=21, weight='bold')
             elif i==0 and j==1:
-                ax.set_title('Glen\'s law, T=f(x,z)', fontsize=21, weight='bold')
+                ax.set_title('Model Viscous', fontsize=21, weight='bold')
             elif i==0 and j==2:
                 ax.set_title('Stake measurements', fontsize=21, weight='bold')
 
@@ -498,61 +492,52 @@ if __name__ == "__main__":
                     clevs = np.arange(dx_min_el, dx_max_el, lev_ticks_range_dx_el/color_resolution)  ## cbar for shading
                     levs_ticks = np.arange(dx_min_el, dx_max_el, lev_ticks_range_dx_el)
                     norm = norm_dx_el
-                    cmap = cmap_elastic
-                    Factor = 1000
-                    units = 'mm'
                 else: ##same scale for visc and obs
                     clevs = np.arange(dx_min_obs, dx_max_obs, lev_ticks_range_dx_obs/color_resolution)  ## cbar for shading
                     levs_ticks = np.arange(dx_min_obs, dx_max_obs, lev_ticks_range_dx_obs)
                     norm = norm_dx_obs
-                    cmap = cmap_glen
-                    Factor = 100
-                    units = 'cm'
             elif i == 1: ##Uy
                 if j == 0: ##elastic
                     clevs = np.arange(dy_min_el, dy_max_el, lev_ticks_range_dy_el/color_resolution)  ## cbar for shading
                     levs_ticks = np.arange(dy_min_el, dy_max_el, lev_ticks_range_dy_el)
                     norm = norm_dy_el
-                    cmap = cmap_elastic
-                    Factor = 1000
-                    units = 'mm'
                 else: ##same scale for visc and obs
                     clevs = np.arange(dy_min_obs, dy_max_obs, lev_ticks_range_dy_obs/color_resolution)  ## cbar for shading
                     levs_ticks = np.arange(dy_min_obs, dy_max_obs, lev_ticks_range_dy_obs)
                     norm = norm_dy_obs
-                    cmap = cmap_glen
-                    Factor = 100
-                    units = 'cm'
             elif i ==2: ##Uz
                 if j == 0: ##elastic
                     clevs = np.arange(dz_min_el, dz_max_el, lev_ticks_range_dz_el/color_resolution)  ## cbar for shading
                     levs_ticks = np.arange(dz_min_el, dz_max_el, lev_ticks_range_dz_el)
                     norm = norm_dz_el
-                    cmap = cmap_elastic
-                    Factor = 1000
-                    units = 'mm'
                 else: ##same scale for visc and obs
                     clevs = np.arange(dz_min_obs, dz_max_obs, lev_ticks_range_dz_obs/color_resolution)  ## cbar for shading
                     levs_ticks = np.arange(dz_min_obs, dz_max_obs, lev_ticks_range_dz_obs)
                     norm = norm_dz_obs
-                    cmap = cmap_glen
-                    Factor = 100
-                    units = 'cm'
 
 
             ###Fills up the map with colors for displacement field interpolated
-            CS1 = ax.contourf(X-xmin, Y-ymin, Interpolated_disp*Factor, clevs, cmap=cmap, extend='both', norm=norm)
+            CS1 = ax.contourf(X-xmin, Y-ymin, Interpolated_disp*100, clevs, cmap=cmap, extend='both', norm=norm)
             if j == 2: ###For observations only:
                 ###Plot stake positions
-                ax.scatter(df_Obs_DiffBetweenTwoDates['X'] -xmin, df_Obs_DiffBetweenTwoDates['Y'] -ymin, color='k', marker='.', linewidths=0.6)
-                # # Add labels to each scatter point
-                # for l, label in enumerate(df_Obs_DiffBetweenTwoDates['Stake']):  # Iterate through each point and label
-                #     ax.text(df_Obs_DiffBetweenTwoDates['X'].iloc[l] -xmin, df_Obs_DiffBetweenTwoDates['Y'].iloc[l] -ymin,label,fontsize=9,ha='right',va='bottom')
+                ax.scatter(df_Obs_DiffBetweenTwoDates['X'] -xmin, df_Obs_DiffBetweenTwoDates['Y'] -ymin, color='k', marker='.', linewidths=0.4)
+                # Add labels to each scatter point
+                for l, label in enumerate(df_Obs_DiffBetweenTwoDates['Stake']):  # Iterate through each point and label
+                    ax.text(df_Obs_DiffBetweenTwoDates['X'].iloc[l] -xmin, df_Obs_DiffBetweenTwoDates['Y'].iloc[l] -ymin,label,fontsize=9,ha='right',va='bottom')
             ###Show colorbar only for first and last column
             if j == 0 or j == 2: ###For observations only:
-                cbar = plt.colorbar(CS1, ax=ax, ticks=levs_ticks, orientation='vertical', label=r'$U_{}$ [{}]'.format(dim,units))
+                cbar = plt.colorbar(CS1, ax=ax, ticks=levs_ticks, orientation='vertical', label=r'$U_{}$ [cm]'.format(dim))
 
             ###Plot cavity contour
             ax.plot(cavity_contour[:, 0]-xmin,cavity_contour[:, 1]-ymin,color='k',linestyle='-',linewidth=0.9)
+            ###Plot also the one from sonar
+            ax.plot(Df_GLsonar['X'].values-xmin,Df_GLsonar['Y'].values-ymin,color='gray',linestyle='-',linewidth=1.3)
+    ################################################################################
+    # SAVE THE FIGURES #####
+    ################################################################################
+    # name_output_fig = 'RelDensProfile_Forage{}_{}_DInitHL_'.format(ForageNumber,  Case)
+    # name_path = '/home/brondexj/BETTIK/MyTaconnaz/MyTaco_Porous_DensSemiLagVSModifHeatSolv/Figures/Case_FullSimu_TestNbIntTsp/'
+    # path_output_fig = Path(name_path)
+    # fig.savefig(path_output_fig.joinpath(name_output_fig))
 
     plt.show()

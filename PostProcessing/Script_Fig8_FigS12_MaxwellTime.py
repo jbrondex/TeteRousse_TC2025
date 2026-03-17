@@ -103,7 +103,7 @@ if __name__ == "__main__":
     Col_Names_slice = ['NodeNumber', 'SigmaIII','SigmaII', 'SigmaI', 'X', 'Y', 'Z', 'Pressure', 'Sxx', 'Syy', 'Szz', 'Sxy', 'Sxz', 'Syz', 'temperature','U', 'V', 'W']
     filename_slice = 'SurfaceOutput_DiagStokes_NonLine_EmptyCavity_Tmap_NoSliding_NoDispLat_VerticalProfil_y2105054.csv'
     ###Which Young's modulus to consider for the plot ?
-    E = 9000 ### In MPa !!!!
+    E = 1000 ### In MPa !!!!
     ### Linear or non linear Glen ?
     n = 3
     ### At which y do we want the vertical slice ? y=2105054.455 is position of borehole 2
@@ -234,7 +234,7 @@ if __name__ == "__main__":
         if Df_plot['IsCircular'].all():  ##different colors for circular crevasses and other crevasses
             col = Col_Crevasses_Circ
         else:
-            col = Col_Crevasses_Other
+            continue #col = Col_Crevasses_Other
         ax.plot(Df_plot['X'].values/1000, Df_plot['Y'].values/1000, color=col, linestyle='-', linewidth=2)
     ###plot transect corresponding to vertical slice
     ax.axhline(y=slice_y / 1000, color=Col_Transect, linestyle='--', linewidth=2.2)
@@ -346,7 +346,7 @@ if __name__ == "__main__":
     ax.scatter(948091.4 / 1000, 3193, color=Col_Crevasses_Circ, marker='o', s=Marker_Size, zorder=3)
     ax.scatter(948103.5 / 1000, 3196.8, color=Col_Crevasses_Circ, marker='o', s=Marker_Size, zorder=3)
     ### Other crevasse
-    ax.scatter(948177.5 / 1000, 3224, color=Col_Crevasses_Other, marker='o', s=Marker_Size, zorder=3)
+    #ax.scatter(948177.5 / 1000, 3224, color=Col_Crevasses_Other, marker='o', s=Marker_Size, zorder=3)
     ### The vertical extent of the subplot has to be adjusted so that both subplots have same height while keeping 1/1 aspect ratio between axes
     PlotWidth_AlongY = (np.floor(np.max(Df_Simu_Surf['Y']))+10) - (np.floor(np.min(Df_Simu_Surf['Y']))-10)
     PlotHeight_AlongZ = zmax - zmin

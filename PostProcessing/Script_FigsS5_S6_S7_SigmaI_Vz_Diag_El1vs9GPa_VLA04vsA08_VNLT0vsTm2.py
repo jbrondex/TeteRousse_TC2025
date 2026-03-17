@@ -108,14 +108,21 @@ if __name__ == "__main__":
     ####~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
     ####~~~~~~~~~~~   LOAD ALL DATA AND PLOT DIRECTLY IN THIS PART OF THE CODE   ~~~~~~~~~~~~~####
     ####~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
-    Col_Crevasses_Circ = '#FF0000' ###'#800080' ###Color for representation of circular crevasses
-    Col_Crevasses_Other = '#800080' ###Color for representation of non circular crevasses
+    Col_Crevasses_Circ = '#00ff00'##'#FF0000' ###'#800080' ###Color for representation of circular crevasses in green
+    Col_Crevasses_CircBis = '#990000' ###Color for representation of circular crevasses in red
     Col_Cavity = '#00FFFF'###color for representation of cavity
     Col_Transect = 'lightgrey'###color for representation of transect
 
-    Colormap_for_stressmap = 'viridis' ###Colorm map to choose for map of stress
-    cmap = cmx.get_cmap(Colormap_for_stressmap )
-    cmap = colors.LinearSegmentedColormap.from_list("viridis_darker", cmap(np.linspace(0.2, 1, 256)))
+    Colormap_for_stressmapdiff = 'viridis' ###Colorm map to choose for map of stress
+    cmapdiff = cmx.get_cmap(Colormap_for_stressmapdiff )
+    cmapdiff = colors.LinearSegmentedColormap.from_list("viridis_darker", cmapdiff(np.linspace(0.2, 1, 256)))
+
+    Colormap_for_stressmap = 'RdBu_r'  ###Colorm map to choose for map of stress
+    cmap = cmx.get_cmap(Colormap_for_stressmap)
+    clevtight = np.arange(-60.01, 60.01, 5)
+    levs_ticktight = np.round(np.arange(-60.01, 60.01, 30))
+    clevwide = np.arange(-120.01, 120.01, 10)
+    levs_tickwide = np.round(np.arange(-120.01, 120.01, 40))
 
     Colormap_for_dispmap = 'inferno' ###Colorm map to choose for map of stress
     cmap_disp = cmx.get_cmap(Colormap_for_dispmap )
@@ -159,7 +166,7 @@ if __name__ == "__main__":
     ###We first open the elastic data
     Data_Simu_El = pd.DataFrame()  ##Initialize an empty dataframe
     for E in ['1GPa', '9GPa']:
-        filename_el = 'SurfaceOutput_DiagElastic_Poisson03_E{}_EmptyCavity_NoDispLat_.dat'.format(E)
+        filename_el = 'SurfaceOutput_DiagElastic_Poisson03_E{}_EmptyCavity_NoDispLat_v97773a1f2.dat'.format(E)
         print('Opening file:', filename_el)
         Data_Simu_El_tmp = pd.read_csv(Pathroot_SimuOutput.joinpath(filename_el), names=Col_Names_Elastic, delim_whitespace=True)
         Data_Simu_El_tmp['E'] = E
@@ -260,8 +267,8 @@ if __name__ == "__main__":
                 ####What is specific to each subplot
                 if j==0: ##Softer case
                     if i==0: ## SigmaI
-                        clevs = np.arange(-0.001, 121, 10)  ## cbar for shading
-                        levs_ticks_stress = np.arange(0.0, 121, 20)
+                        clevs = clevwide #np.arange(-0.001, 121, 10)  ## cbar for shading
+                        levs_ticks_stress = levs_tickwide  # np.arange(0.0, 121, 20)
                         CS_soft_stress = ax.contourf(X/1000, Y/1000, Field_soft_interp*1000, clevs, cmap=cmap,extend='both')
                         C1 = CS_soft_stress
                     else: ##Deformation Z
@@ -280,7 +287,7 @@ if __name__ == "__main__":
                         C1 = CS_soft_disp
                 elif j ==1: ###Stiffer case
                     if i==0: ## SigmaI
-                        clevs = np.arange(-0.01, 121, 10)  ## cbar for shading
+                        clevs = clevwide #np.arange(-0.01, 121, 10)  ## cbar for shading
                         CS_stiff_stress = ax.contourf(X/1000, Y/1000, Field_stiff_interp*1000, clevs, cmap=cmap,extend='both')
                         C1 = CS_stiff_stress
                     else:
@@ -330,9 +337,12 @@ if __name__ == "__main__":
                     ###get proper points
                     Df_plot = Df_Crevasses[Df_Crevasses['Crevasse Number'] == crev_num]
                     if Df_plot['IsCircular'].all():  ##different colors for circular crevasses and other crevasses
-                        col = Col_Crevasses_Circ
+                        if i ==0: ###different color for the different lines to ensure good contrast with background colormap
+                            col = Col_Crevasses_Circ
+                        elif i==1:
+                            col = Col_Crevasses_CircBis
                     else:
-                        col = Col_Crevasses_Other
+                        continue #col = Col_Crevasses_Other
                     ax.plot(Df_plot['X'].values/1000, Df_plot['Y'].values/1000, color=col, linestyle='-', linewidth=2)
                 ###Plot cavity contour
                 ax.plot(cavity_contour[:, 0]/1000,cavity_contour[:, 1]/1000,color=Col_Cavity,linestyle='-',linewidth=2.5)
