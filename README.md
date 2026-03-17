@@ -8,7 +8,7 @@
 
 ## Motivations
 
-Our primary goal is to establish a correlation between the occurrence of crevasses in glaciers and the distribution and magnitude of stresses. To this end, we use the carefully monitored artificial drainage of a water-filled cavity on Tête Rousse Glacier (Mont Blanc range, France) to constrain the failure criterion and stress threshold that best reproduce the field of circular crevasses mapped at the surface during the summer following the pumping operation. We performed numerical simulations using the finite element code Elmer/Ice. Since the evolution of the water level and the cavity volume (and, to a lesser extent, its geometry) are well-constrained, water pressure against the cavity wall can be prescribed as a time-dependent boundary condition, and stress fields are inferred directly from the force balance. In other words, our numerical experiments are entirely force-driven. The resulting deformations serve as independent control variables to assess the nature of the mechanical response. This work is at the origin of an article submitted to The Cryosphere on 2025/05/07. 
+Our primary goal is to establish a correlation between the occurrence of crevasses in glaciers and the distribution and magnitude of stresses. To this end, we use the carefully monitored artificial drainage of a water-filled cavity on Tête Rousse Glacier (Mont Blanc range, France) to constrain the failure criterion and stress threshold that best reproduce the field of circular crevasses mapped at the surface during the summer following the pumping operation. We performed numerical simulations using the finite element code Elmer/Ice. Since the evolution of the water level and the cavity volume (and, to a lesser extent, its geometry) are well-constrained, water pressure against the cavity wall can be prescribed as a time-dependent boundary condition, and stress fields are inferred directly from the force balance. In other words, our numerical experiments are entirely force-driven. The resulting deformations serve as independent control variables to assess the nature of the mechanical response. This work is at the origin of an article submitted to The Cryosphere on 2025/05/07 and accepted on 2026/03/06 
 
 ## Quick install
 For numerical simulations, we used version 9.0 of Elmer/Ice (Rev:0f18c8f). The Elmer/Ice code is publicly available through GitHub (https://github.com/ElmerCSC/elmerfem last access: Mai 2025). 
@@ -62,7 +62,7 @@ scipy==1.15.2
 ```
 ## Run the simulations
 
-The following provides details on how to run the simulations presented in this study. It is not intended to serve as a user manual for Elmer. Documentation regarding Elmer can be found on the Elmer git : https://github.com/ElmerCSC/elmerfem (last accessed: May 2025).
+The following provides details on how to run the simulations presented in this study. It is not intended to serve as a user manual for Elmer. Documentation regarding Elmer can be found on the Elmer git : https://github.com/ElmerCSC/elmerfem (last accessed: March 2026).
 
 All files required to run the simulations are in the RunFiles_Elmer. Of course, all path contained in these files need to be adapted. 
 
